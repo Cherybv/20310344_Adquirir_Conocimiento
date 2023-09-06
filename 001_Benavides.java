@@ -1,52 +1,80 @@
-import java.util.Scanner;
-import java.util.HashMap;
-import java.util.Map;
+import java.io.*;
+import java.util.*;
 
-public class ChatBot {
+public class Chatbot {
+    private static final String ARCHIVO_BASE_DE_DATOS = "basededatos.txt";
+    private static Map<String, String> baseDeDatos;
+    private static Map<String, String> preguntasDesconocidas;
 
-    private HashMap<String, String> respuestasPredefinidas;
+    public static void main(String[] args) {
+        baseDeDatos = cargarBaseDeDatos();
+        preguntasDesconocidas = new HashMap<>();
 
-    public ChatBot() {
-        respuestasPredefinidas = new HashMap<>();
-        respuestasPredefinidas.put("Hola", "¡Hola! ¿En qué puedo ayudarte?");
-        respuestasPredefinidas.put("Como estas?", "Estoy bien, gracias por preguntar, y tú como estas?");
-        respuestasPredefinidas.put("Muy bien gracias", "Que bueno me alegro mucho");
-        respuestasPredefinidas.put("Estoy triste", "Platicame ¿qué pasa?");
-        respuestasPredefinidas.put("Podemos hablar de algo mas?", "Claro que si, ¿Qué te gustaría saber?");
-
-    }
-
-    public void iniciarChat() {
         Scanner scanner = new Scanner(System.in);
-        System.out.print("Chery-bot: ");
-        System.out.println("¡Hola! Soy Chery-bot creado por Erik Benavides. ¿En qué puedo ayudarte? (Escribe 'Adiós' para salir)");
-        while (true) {
-            System.out.print("Tu: ");
-            String input = scanner.nextLine();
 
-            if (input.equalsIgnoreCase("Adios")) {
-                System.out.println("Adiós. Espero verte pronto.");
+        System.out.println("Chery-bot:¡Hola! Soy Chery-bot =)");
+        System.out.println("          Puedes preguntarme cualquier cosa o escribir 'salir' para finalizar.");
+
+        while (true) {
+            System.out.print("Tú: ");
+            String pregunta = scanner.nextLine().toLowerCase();
+
+            if (pregunta.equals("salir")) {
+                guardarBaseDeDatos();
+                System.out.println("Chatbot: ¡Hasta luego!");
                 break;
             }
 
-            String respuesta = respuestasPredefinidas.get(input);
-            System.out.print("Chery-bot: ");
+            String respuesta = buscarRespuesta(pregunta);
             if (respuesta != null) {
-                System.out.println(respuesta);
+                System.out.println("Chery-bot: " + respuesta);
             } else {
-                String nuevaPregunta = input;
-                System.out.println("Lo siento, no entiendo esa pregunta.¿Cuál sería la respuesta apropiada a esa pregunta?");
-                 System.out.print("Tu: ");
+                System.out.println("Chery-bot: Lo siento, no tengo información sobre eso.");
+                System.out.println("          Dime cuál sería la respuesta a esta pregunta: ");
+                System.out.print("Tú: ");
                 String nuevaRespuesta = scanner.nextLine();
-                respuestasPredefinidas.put(nuevaPregunta, nuevaRespuesta);
-                System.out.println("Gracias por enseñarme.");
+                preguntasDesconocidas.put(pregunta, nuevaRespuesta);
+                System.out.println("Chery-bot: Gracias por la nueva información.");
             }
         }
-
-        scanner.close();
     }
-    public static void main(String[] args) {
-        ChatBot chatBot = new ChatBot();
-        chatBot.iniciarChat();
+
+    private static Map<String, String> cargarBaseDeDatos() {
+        Map<String, String> baseDeDatos = new HashMap<>();
+        try (BufferedReader br = new BufferedReader(new FileReader(ARCHIVO_BASE_DE_DATOS))) {
+            String linea;
+            while ((linea = br.readLine()) != null) {
+                String[] partes = linea.split(":");
+                if (partes.length == 2) {
+                    baseDeDatos.put(partes[0].trim().toLowerCase(), partes[1].trim());
+                }
+            }
+        } catch (IOException e) {
+            System.err.println("Error al cargar la base de datos: " + e.getMessage());
+        }
+        return baseDeDatos;
+    }
+
+    private static String buscarRespuesta(String pregunta) {
+        String respuesta = baseDeDatos.get(pregunta);
+        if (respuesta == null) {
+            respuesta = preguntasDesconocidas.get(pregunta);
+        }
+        return respuesta;
+    }
+
+    private static void guardarBaseDeDatos() {
+        try (BufferedWriter bw = new BufferedWriter(new FileWriter(ARCHIVO_BASE_DE_DATOS))) {
+            for (Map.Entry<String, String> entry : baseDeDatos.entrySet()) {
+                bw.write(entry.getKey() + ": " + entry.getValue());
+                bw.newLine();
+            }
+            for (Map.Entry<String, String> entry : preguntasDesconocidas.entrySet()) {
+                bw.write(entry.getKey() + ": " + entry.getValue());
+                bw.newLine();
+            }
+        } catch (IOException e) {
+            System.err.println("Error al guardar la base de datos: " + e.getMessage());
+        }
     }
 }
