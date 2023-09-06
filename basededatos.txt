@@ -1,0 +1,10 @@
+muy bien gracias: Que bueno me alegro mucho
+podemos hablar de algo mas?: Claro que si, que te gustaria saber?
+como estas?: Muy bien gracias y tú?
+dame 5 frutas: Uvas, Manzanas, Platano, Limon y Lima
+dame 6 frutas: Uva, Sandía, Naranja, Guayaba, Platano y Kiwi
+muy bien: Que bueno me alegro
+hola: Hola ¿Cómo puedo ayudarte?
+podemos hablar de otra cosa?: Claro que si, ¿de qué te gustaría hablar?
+estoy trite: Enserio, dime ¿qué pasa?
+que es una fruta?: Una fruta es el organo de una planta con flor
